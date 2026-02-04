@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: sans-serif; padding: 24px; background: #f8f9fa; }
+    h2 { margin: 0 0 16px; }
+    input, button { margin: 12px 0; padding: 10px 16px; font-size: 16px; }
+    button { background: #0066ff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #0055dd; }
+  </style>
+</head>
+<body>
+  <h2>Генератор презентации стримера</h2>
+  <p>Загрузите JSON с категориями и устройствами:</p>
+  <input type="file" id="file" accept=".json" />
+  <br>
+  <button id="gen">Сгенерировать</button>
+  <button id="cancel" style="background:#dc3545;">Отмена</button>
+
+  <script>
+    const fileInput = document.getElementById('file');
+    document.getElementById('gen').onclick = () => {
+      const file = fileInput.files[0];
+      if (!file) return alert('Выберите JSON-файл');
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const data = JSON.parse(e.target.result);
+          parent.postMessage({ pluginMessage: { type: 'generate', data } }, '*');
+        } catch (err) {
+          alert('Ошибка в JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    document.getElementById('cancel').onclick = () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    };
+  </script>
+</body>
+</html>
